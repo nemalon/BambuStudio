@@ -839,6 +839,7 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
 
     // sending mode
     m_status_bar    = std::make_shared<BBLStatusBarPrint>(m_simplebook);
+    m_panel_sending = m_status_bar->get_panel();
     m_status_bar->set_status_height_changed_callback([this](int height) {
         auto update_fn = [this, height]() {
             const wxSize size(SELECT_MACHINE_DIALOG_SIMBOOK_SIZE2.x, height);
