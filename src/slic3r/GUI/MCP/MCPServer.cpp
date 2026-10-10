@@ -303,6 +303,7 @@ bool MCPServer::start(int port)
     worker_ = boost::thread([this] { io_.run(); });
 
     BOOST_LOG_TRIVIAL(info) << "[MCP] Native Model Context Protocol (MCP) server listening on http://127.0.0.1:" << port_;
+    std::cout << "[MCP] Native Model Context Protocol (MCP) server listening on http://127.0.0.1:" << port_ << std::endl;
     return true;
 }
 
@@ -327,6 +328,7 @@ void MCPServer::stop()
     io_.restart();
 
     BOOST_LOG_TRIVIAL(info) << "[MCP] Native MCP server stopped";
+    std::cout << "[MCP] Native MCP server stopped" << std::endl;
 }
 
 void MCPServer::do_accept()

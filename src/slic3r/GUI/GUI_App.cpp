@@ -1105,7 +1105,7 @@ void GUI_App::post_init()
         BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << " sync_user_preset: false";
     }
 
-    if (app_config->get("enable_mcp_server") == "true") {
+    if (app_config->get_bool("enable_mcp_server")) {
         std::string mcp_port_str = app_config->get("mcp_server_port");
         int mcp_port = 27183;
         if (!mcp_port_str.empty()) {
@@ -3651,6 +3651,20 @@ bool GUI_App::on_init_inner()
     });
 
     m_initialized = true;
+
+    if (app_config->get_bool("enable_mcp_server")) {
+        std::string mcp_port_str = app_config->get("mcp_server_port");
+        int mcp_port = 27183;
+        if (!mcp_port_str.empty()) {
+            try {
+                mcp_port = std::stoi(mcp_port_str);
+            } catch (...) {
+                mcp_port = 27183;
+            }
+        }
+        BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << " Starting Model Context Protocol (MCP) Server on loopback port " << mcp_port;
+        start_mcp_server(mcp_port);
+    }
 
     flush_logs();
 

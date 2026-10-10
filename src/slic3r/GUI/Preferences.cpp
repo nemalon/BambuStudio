@@ -947,6 +947,19 @@ wxBoxSizer *PreferencesDialog::create_item_checkbox(wxString title, wxWindow *pa
             BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << " sync_user_preset: " << (sync ? "true" : "false");
         }
 
+        if (param == "enable_mcp_server") {
+            if (checkbox->GetValue()) {
+                std::string mcp_port_str = app_config->get("mcp_server_port");
+                int mcp_port = 27183;
+                if (!mcp_port_str.empty()) {
+                    try { mcp_port = std::stoi(mcp_port_str); } catch (...) {}
+                }
+                wxGetApp().start_mcp_server(mcp_port);
+            } else {
+                wxGetApp().stop_mcp_server();
+            }
+        }
+
         #ifdef __WXMSW__
         if (param == "associate_3mf") {
              bool pbool = app_config->get("associate_3mf") == "true" ? true : false;
@@ -1756,7 +1769,7 @@ wxWindow *PreferencesDialog::create_other_tab()
     // ---- Model Context Protocol (MCP) ----
     auto title_mcp = create_item_title(_L("Model Context Protocol (MCP)"), scrolled, _L("Model Context Protocol (MCP)"));
     auto item_enable_mcp = create_item_checkbox(
-        _L("Enable Local MCP Server") + " (" + _L("Take effect after restarting Studio") + ")", scrolled,
+        _L("Enable Local MCP Server"), scrolled,
         _L("Enables local loopback MCP server (127.0.0.1) for AI assistants (Claude, Antigravity, Cursor) to inspect parameters, slice, and color models."),
         50, "enable_mcp_server");
     auto item_mcp_port = create_item_input(
