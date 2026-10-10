@@ -166,6 +166,12 @@ void BBLStatusBarSend::clear_percent()
 
 void BBLStatusBarSend::show_error_info(wxString msg, int code, wxString description, wxString extra)
 {
+    if (!wxIsMainThread()) {
+        wxTheApp->CallAfter([this, msg, code, description, extra]() {
+            show_error_info(msg, code, description, extra);
+        });
+        return;
+    }
     set_status_text(msg);
     m_prog->Hide();
     m_stext_percent->Hide();
@@ -287,6 +293,12 @@ bool BBLStatusBarSend::format_text(wxStaticText* dc, int width, const wxString& 
 
 void BBLStatusBarSend::set_status_text(const wxString& txt)
 {
+    if (!wxIsMainThread()) {
+        wxTheApp->CallAfter([this, txt]() {
+            set_status_text(txt);
+        });
+        return;
+    }
     //auto txtss = "Sending the printing task has timed out.\nPlease try again!";
     //auto txtss = "The printing project is being uploaded... 25%%";
     //m_status_text->SetLabelText(txtss);

@@ -5,6 +5,8 @@
 #include <libslic3r/Thread.hpp>
 #include <boost/log/trivial.hpp>
 
+#include <wx/app.h>
+
 namespace Slic3r {
 
 void GUI::Job::run(std::exception_ptr &eptr)
@@ -32,12 +34,28 @@ void GUI::Job::update_status(int st, const wxString &msg)
 
 void GUI::Job::update_percent_finish()
 {
-    m_progress->clear_percent();
+    if (!wxIsMainThread()) {
+        wxTheApp->CallAfter([this]() {
+            if (m_progress)
+                m_progress->clear_percent();
+        });
+        return;
+    }
+    if (m_progress)
+        m_progress->clear_percent();
 }
 
 void GUI::Job::show_error_info(wxString msg, int code, wxString description, wxString extra)
 {
-    m_progress->show_error_info(msg, code, description, extra);
+    if (!wxIsMainThread()) {
+        wxTheApp->CallAfter([this, msg, code, description, extra]() {
+            if (m_progress)
+                m_progress->show_error_info(msg, code, description, extra);
+        });
+        return;
+    }
+    if (m_progress)
+        m_progress->show_error_info(msg, code, description, extra);
 }
 
 GUI::Job::Job(std::shared_ptr<ProgressIndicator> pri)
